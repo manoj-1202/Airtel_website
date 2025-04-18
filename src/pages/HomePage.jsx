@@ -9,6 +9,8 @@ import primeImg from "../assets/img/prime.png";
 import phoneCallingImg from "../assets/img/phone_calling.gif";
 import sunImg from "../assets/img/sun.png";
 import zee5Img from "../assets/img/zee5.png";
+import netflix from "../assets/img/netflix.png";
+import appletv from "../assets/img/appletv.png";
 
 const HomePage = () => {
   // Node Mailer
@@ -19,6 +21,7 @@ const HomePage = () => {
     message: "",
   });
   const [formStatus, setFormStatus] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,24 +30,35 @@ const HomePage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/send-contact-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formState),
-      });
+      const response = await fetch(
+        "https://airtelemail.onrender.com/send-contact-email",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formState),
+        }
+      );
 
       if (response.ok) {
         setFormStatus("success");
         setFormState({ name: "", email: "", phone: "", message: "" });
-      } else {
+        setFormStatus("success");
+
+        setTimeout(() => {
+          setFormStatus(null);
+        }, 2000);
+      }  
+      else {
         alert("Something went wrong. Please try again.");
       }
     } catch (error) {
       console.error("Error sending appointment email:", error);
       alert("Network error. Please try again later.");
     }
+    setIsLoading(false);
   };
 
   return (
@@ -156,8 +170,34 @@ const HomePage = () => {
                     placeholder="Any specific requirements?"
                   ></textarea>
                 </div>
-                <button type="submit" className="w-full btn btn-primary py-3">
-                  Send Message
+                <button
+                  type="submit"
+                  className="btn btn-primary w-full flex items-center justify-center"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <svg
+                      className="animate-spin h-5 w-5 mr-2 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8z"
+                      ></path>
+                    </svg>
+                  ) : null}
+                  {isLoading ? "Sending..." : "Send Message"}
                 </button>
 
                 {formStatus === "success" ? (
@@ -377,12 +417,12 @@ const HomePage = () => {
             <div className="bg-white rounded-xl shadow-card overflow-hidden">
               <div className="bg-accent p-4 text-white text-center">
                 <h3 className="text-xl font-bold">Premium Plan</h3>
-                <div className="text-5xl font-bold my-4">₹1099</div>
+                <div className="text-5xl font-bold my-4">₹1199</div>
                 <p className="text-white/80">per month</p>
               </div>
               <div className="p-6">
                 <div className="text-center mb-6">
-                  <div className="text-3xl font-bold text-accent">200 Mbps</div>
+                  <div className="text-3xl font-bold text-accent">100 Mbps</div>
                   <p className="text-gray-500">Unlimited Data</p>
                 </div>
                 <ul className="space-y-3 mb-8">
@@ -400,7 +440,7 @@ const HomePage = () => {
                   </li>
                   <li className="flex items-center">
                     <CheckIcon className="h-5 w-5 text-green-500 mr-2" />
-                    <span>350+ TV Channels</span>
+                    <span>350+ IPTV Channels</span>
                   </li>
                   <li className="flex items-center">
                     <CheckIcon className="h-5 w-5 text-green-500 mr-2" />
@@ -425,12 +465,24 @@ const HomePage = () => {
                       className="h-full w-auto"
                     />
                   </div>
-                  <div className="w-12 h-12 flex items-center justify-center">
-                    <img src={sunImg} alt="Xstream" className="h-full w-auto" />
-                  </div>
+                 
                   <div className="w-12 h-12 flex items-center justify-center">
                     <img
                       src={zee5Img}
+                      alt="Xstream"
+                      className="h-full w-auto"
+                    />
+                  </div>
+                  <div className="w-12 h-12 flex items-center justify-center">
+                    <img
+                      src={netflix}
+                      alt="Xstream"
+                      className="h-full w-auto"
+                    />
+                  </div>
+                  <div className="w-12 h-12 flex items-center justify-center">
+                    <img
+                      src={appletv}
                       alt="Xstream"
                       className="h-full w-auto"
                     />

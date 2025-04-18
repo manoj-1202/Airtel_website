@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-import {
-  MailIcon,
-  PhoneIcon,
-  LocationMarkerIcon,
-} from "@heroicons/react/outline";
+import {MailIcon,PhoneIcon,LocationMarkerIcon} from "@heroicons/react/outline";
 import phoneCallingImg from "../assets/img/phone_calling.gif";
 
 const ContactPage = () => {
@@ -14,6 +10,7 @@ const ContactPage = () => {
     message: "",
   });
   const [formStatus, setFormStatus] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormState({
@@ -25,15 +22,19 @@ const ContactPage = () => {
   // Node mailer
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/send-contact-email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formState),
-      });
+      const response = await fetch(
+        "https://airtelemail.onrender.com/send-contact-email",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formState),
+        }
+      );
 
       if (response.ok) {
         setFormStatus("success");
@@ -44,13 +45,14 @@ const ContactPage = () => {
           message: "",
         });
 
-        // For now, just show success message
+        //  success message
         setFormStatus("success");
 
         setTimeout(() => {
           setFormStatus(null);
-        }, 3000);
-      } else {
+        }, 2000);
+      } 
+      else {
         setFormStatus("error");
         alert("Something went wrong. Please try again later.");
       }
@@ -59,6 +61,7 @@ const ContactPage = () => {
       setFormStatus("error");
       alert("Something went wrong. Please try again later.");
     }
+    setIsLoading(false);
   };
 
   return (
@@ -135,11 +138,7 @@ const ContactPage = () => {
               <div className="bg-white rounded-xl shadow-lg p-8">
                 <h2 className="text-2xl font-bold mb-6">Send us a Message</h2>
 
-                {formStatus === "success" ? (
-                  <div className="bg-green-50 text-green-800 rounded-lg p-4 mb-6">
-                    Thank you for your message! We'll get back to you soon.
-                  </div>
-                ) : null}
+              
 
                 <form onSubmit={handleSubmit}>
                   <div className="mb-4">
@@ -205,9 +204,41 @@ const ContactPage = () => {
                     ></textarea>
                   </div>
 
-                  <button type="submit" className="btn btn-primary w-full">
-                    Send Message
+                  <button
+                    type="submit"
+                    className="btn btn-primary w-full flex items-center justify-center"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <svg
+                        className="animate-spin h-5 w-5 mr-2 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v8z"
+                        ></path>
+                      </svg>
+                    ) : null}
+                    {isLoading ? "Sending..." : "Send Message"}
                   </button>
+                  
+                  {formStatus === "success" ? (
+                  <div className="bg-green-50 text-green-800 rounded-lg p-4 mb-6">
+                    Thank you for your message! We'll get back to you soon.
+                  </div>
+                ) : null}
                 </form>
               </div>
             </div>
